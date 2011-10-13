@@ -10,7 +10,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'mydistro.settings'
 
 from django.core.management import setup_environ
 from mydistro import settings
-from mydistro.rack.models import Package, Repo, Group, Arch, PackageDetails
+from mydistro.rack.models import Package, Repo, Group, Arch, PackageArch
 
 setup_environ(settings)
 
@@ -25,10 +25,16 @@ def import_static_values():
   a = Arch(name='noarch', description='Architecture Independant')
   a.save()
 
-  a = Arch(name='i386', description='32-bit Architecture')
+  a = Arch(name='i386', description='32-bit Architecture\n\nIntel i386, AMD 386, or above.')
   a.save()
 
-  a = Arch(name='i686', description='32-bit Architecture')
+  a = Arch(name='i486', description='32-bit Architecture\n\nIntel 486, and AMD 486, along with other less known brands of 2nd Generation 32-bit CPUs')
+  a.save()
+
+  a = Arch(name='i586', description='32-bit Architecture\n\nPentiums MMX, AMD-K5.')
+  a.save()
+
+  a = Arch(name='i686', description='32-bit Architecture\n\nIntel Pentium Pro/II/III, AMD K6/Athlon/T-Bird/T-Bred/Duron')
   a.save()
 
   a = Arch(name='x86_64', description='64-bit Architecture')
@@ -164,7 +170,7 @@ def import_new_repo(path):
     '''
     # create as required
     if not p:
-      p = Package(name=l[0], version=l[1], description=package_description, license=l[3], url=package_url, package_uuid=l[5], modify_date=datetime.now())
+      p = Package(name=l[0], version=l[1], description=package_description, license=l[3], url=package_url, modify_date=datetime.now())
       p.save()
 
       p_a = Arch.objects.filter(name=l[7])
@@ -175,7 +181,7 @@ def import_new_repo(path):
         p_a = p_a[0]
 
       # establish the details specific to the package/arch/repo combination
-      d = PackageDetails(package=p, repo=r, arch=p_a, installed_size=l[8], package_size=l[9])
+      d = PackageArch(package=p, repo=r, arch=p_a, installed_size=l[8], package_size=l[9], package_uuid=l[5])
       d.save()
 
   c.close()

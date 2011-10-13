@@ -41,14 +41,19 @@ class Package(models.Model):
   version = models.CharField(max_length=32)
   license = models.CharField(max_length=256)
   url = models.CharField(max_length=256)
-  package_uuid = models.CharField(max_length=64)
 
   # package rating
   score_aggregate = models.FloatField(default=0)
   score_votes = models.IntegerField(default=0)
 
+#  score_popularity = models.IntegerField(default=0)
+
+  # pins
+#  total_pins_add = models.IntegerField(default=0)
+#  total_pins_rem = models.IntegerField(default=0)
+
   # repositories can contain many packages and packages can belong to multiple repositories.
-  repository = models.ManyToManyField(Repo, through='PackageDetails')
+  repository = models.ManyToManyField(Repo, through='PackageArch')
 
   modify_date = models.DateTimeField('date modified')
 
@@ -60,7 +65,9 @@ class Package(models.Model):
 
 
 
-class PackageDetails(models.Model):
+
+
+class PackageArch(models.Model):
   repo = models.ForeignKey(Repo)
   package = models.ForeignKey(Package)
 
@@ -68,6 +75,8 @@ class PackageDetails(models.Model):
 
   package_size = models.IntegerField()
   installed_size = models.IntegerField()
+
+  package_uuid = models.CharField(max_length=64)
 
 
 
@@ -103,6 +112,7 @@ class Spin(models.Model):
   base_kickstart = models.TextField()
 
   group_add = models.ManyToManyField(Group)
+  package_add = models.ManyToManyField(PackageArch)
 
   def __unicode__(self):
     return self.name
